@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tily — Your Personal Work Timer</title>
+  <meta name="description" content="Tily is a beautiful macOS timer that helps you stay focused, track your work sessions, and understand your productivity over time." />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink: #1d1d1f;
+      --ink2: #3d3d3f;
+      --muted: #6e6e73;
+      --rule: #d2d2d7;
+      --bg: #f5f5f7;
+      --white: #ffffff;
+      --orange: #e8890b;
+      --orange-light: #fff6e5;
+      --radius-sm: 12px;
+      --radius: 20px;
+      --radius-lg: 28px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--white);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* ─── NAV ─── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(255,255,255,0.82);
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      border-bottom: 1px solid rgba(0,0,0,0.08);
+    }
+
+    .nav-inner {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--ink);
+      text-decoration: none;
+      letter-spacing: -0.01em;
+    }
+
+    .logo-mark {
+      width: 30px;
+      height: 30px;
+      background: var(--orange);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .logo-mark img {
+      width: 20px;
+      height: 20px;
+      object-fit: contain;
+    }
+
+    .nav-cta {
+      background: var(--ink);
+      color: #fff;
+      font-size: 0.8rem;
+      font-weight: 500;
+      padding: 0.45rem 1.1rem;
+      border-radius: 100px;
+      text-decoration: none;
+      transition: opacity 0.15s;
+      letter-spacing: -0.01em;
+    }
+
+    .nav-cta:hover { opacity: 0.75; }
+
+    /* ─── HERO ─── */
+    .hero {
+      padding: 6rem 2rem 3rem;
+      text-align: center;
+    }
+
+    .hero-eyebrow {
+      display: inline-block;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--orange);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 1.25rem;
+    }
+
+    .hero h1 {
+      font-size: clamp(3.2rem, 8vw, 6rem);
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      line-height: 1.02;
+      color: var(--ink);
+      max-width: 14ch;
+      margin: 0 auto;
+    }
+
+    .hero-sub {
+      margin: 1.5rem auto 0;
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      color: var(--muted);
+      max-width: 480px;
+      line-height: 1.65;
+      font-weight: 400;
+      letter-spacing: -0.01em;
+    }
+
+    .hero-actions {
+      margin-top: 2.25rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .btn-download {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--orange);
+      color: #fff;
+      font-size: 0.95rem;
+      font-weight: 600;
+      padding: 0.8rem 1.75rem;
+      border-radius: 100px;
+      text-decoration: none;
+      letter-spacing: -0.01em;
+      transition: filter 0.15s, transform 0.15s;
+    }
+
+    .btn-download:hover {
+      filter: brightness(0.92);
+      transform: translateY(-1px);
+    }
+
+    .hero-compat {
+      font-size: 0.75rem;
+      color: #adadb0;
+      letter-spacing: 0.01em;
+    }
+
+    /* ─── HERO SCREENSHOT ─── */
+    .hero-visual {
+      margin: 3.5rem auto 0;
+      padding: 0 2rem;
+      max-width: 1000px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 2rem;
+    }
+
+    .hero-visual .shot-main {
+      flex: 1;
+      min-width: 0;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow:
+        0 2px 4px rgba(0,0,0,0.04),
+        0 12px 40px rgba(0,0,0,0.12),
+        0 40px 80px rgba(0,0,0,0.08);
+    }
+
+    .hero-visual .shot-main img { display: block; width: 100%; height: auto; }
+
+    .hero-visual .shot-widget {
+      width: 190px;
+      flex-shrink: 0;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow:
+        0 2px 4px rgba(0,0,0,0.06),
+        0 12px 40px rgba(0,0,0,0.14);
+    }
+
+    .hero-visual .shot-widget img { display: block; width: 100%; height: auto; }
+
+    /* ─── DIVIDER ─── */
+    .divider {
+      height: 1px;
+      background: var(--rule);
+      max-width: 1080px;
+      margin: 0 auto;
+    }
+
+    /* ─── SECTION COMMON ─── */
+    section { padding: 5rem 2rem; }
+
+    .section-tag {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--orange);
+      margin-bottom: 0.6rem;
+    }
+
+    .section-title {
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 700;
+      letter-spacing: -0.035em;
+      line-height: 1.1;
+      color: var(--ink);
+    }
+
+    .section-body {
+      margin-top: 0.8rem;
+      font-size: 1.05rem;
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 480px;
+      letter-spacing: -0.01em;
+    }
+
+    /* ─── FEATURES BENTO ─── */
+    .features-wrap {
+      max-width: 1080px;
+      margin: 0 auto;
+    }
+
+    .features-header {
+      text-align: center;
+      margin-bottom: 3.5rem;
+    }
+
+    .features-header .section-body {
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .bento {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: auto auto;
+      gap: 1rem;
+    }
+
+    @media (max-width: 800px) {
+      .bento { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 520px) {
+      .bento { grid-template-columns: 1fr; }
+    }
+
+    .bento-card {
+      background: var(--bg);
+      border-radius: var(--radius);
+      padding: 2rem;
+      transition: transform 0.2s;
+    }
+
+    .bento-card:hover { transform: translateY(-2px); }
+
+    .bento-card.accent {
+      background: var(--orange-light);
+    }
+
+    .bento-icon {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      line-height: 1;
+    }
+
+    .bento-card h3 {
+      font-size: 1.05rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      margin-bottom: 0.4rem;
+    }
+
+    .bento-card p {
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* ─── SCREENSHOTS ─── */
+    .shots-wrap {
+      max-width: 1080px;
+      margin: 0 auto;
+    }
+
+    .shots-header {
+      margin-bottom: 3rem;
+    }
+
+    .shots-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    @media (max-width: 640px) {
+      .shots-grid { grid-template-columns: 1fr; }
+      .hero-visual { flex-direction: column; align-items: center; }
+      .hero-visual .shot-widget { width: 160px; }
+    }
+
+    .shot-card {
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: var(--bg);
+    }
+
+    .shot-card img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .shot-label {
+      padding: 0.85rem 1.1rem;
+      font-size: 0.82rem;
+      color: var(--muted);
+      letter-spacing: -0.01em;
+    }
+
+    /* ─── DEMO ─── */
+    .demo-wrap {
+      max-width: 880px;
+      margin: 0 auto;
+    }
+
+    .demo-header { margin-bottom: 2.5rem; }
+
+    .video-shell {
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      background: #000;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.16);
+    }
+
+    .video-shell video {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    /* ─── CTA ─── */
+    .cta-section {
+      background: var(--bg);
+    }
+
+    .cta-inner {
+      max-width: 640px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .cta-mark {
+      width: 72px;
+      height: 72px;
+      background: var(--orange);
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+    }
+
+    .cta-mark img {
+      width: 46px;
+      height: 46px;
+      object-fit: contain;
+    }
+
+    .cta-inner h2 {
+      font-size: clamp(2rem, 4vw, 2.8rem);
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      line-height: 1.1;
+      color: var(--ink);
+    }
+
+    .cta-inner p {
+      margin-top: 0.75rem;
+      font-size: 1rem;
+      color: var(--muted);
+      letter-spacing: -0.01em;
+    }
+
+    .cta-inner .btn-download {
+      margin-top: 2rem;
+    }
+
+    .cta-inner .hero-compat {
+      margin-top: 0.75rem;
+    }
+
+    /* ─── FOOTER ─── */
+    footer {
+      border-top: 1px solid var(--rule);
+      padding: 2rem;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--muted);
+      letter-spacing: -0.01em;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-inner">
+      <a class="nav-logo" href="#">
+        <span class="logo-mark">
+          <img src="../assets/Tily/logo.png" alt="Tily logo" />
+        </span>
+        Tily
+      </a>
+      <a class="nav-cta" href="../assets/Tily/Tily.dmg" download="Tily.dmg">Download</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <h1>Optimise<br />with Tily.</h1>
+    <p class="hero-sub">Tily is designed to help students study better and use their time more efficiently</p>
+    <div class="hero-actions">
+      <a class="btn-download" href="../assets/Tily/Tily.dmg" download="Tily.dmg">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+          <polyline points="7 10 12 15 17 10"/>
+          <line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        Download for Free
+      </a>
+      <span class="hero-compat">macOS 13+ &nbsp;·&nbsp; Apple Silicon &amp; Intel</span>
+    </div>
+  </section>
+
+  <!-- HERO VISUAL -->
+  <div class="hero-visual">
+    <div class="shot-main">
+      <img
+        src="../assets/Tily/Screenshot 2026-03-14 at 11.45.23.png"
+        alt="Tily analytics dashboard showing weekly overview"
+      />
+    </div>
+    <div class="shot-widget">
+      <img
+        src="../assets/Tily/Screenshot 2026-03-14 at 11.45.04.png"
+        alt="Tily timer widget"
+      />
+    </div>
+  </div>
+
+
+  <!-- SCREENSHOTS -->
+  <section>
+    <div class="shots-wrap">
+      <div class="shots-header">
+        <h2 class="section-title">Some of the ways you can measure your stats!</h2>
+      </div>
+
+      <div class="shots-grid">
+        <div class="shot-card">
+          <img
+            src="../assets/Tily/Screenshot 2026-03-14 at 11.45.12.png"
+            alt="Weekly stats — hours per day bar chart"
+            loading="lazy"
+          />
+          <div class="shot-label">Weekly hours — day-by-day breakdown</div>
+        </div>
+        <div class="shot-card">
+          <img
+            src="../assets/Tily/Screenshot 2026-03-14 at 11.45.19.png"
+            alt="Tily settings and color preferences"
+            loading="lazy"
+          />
+          <div class="shot-label">Settings — color themes &amp; preferences</div>
+        </div>
+        <div class="shot-card">
+          <img
+            src="../assets/Tily/Screenshot 2026-03-14 at 11.45.27.png"
+            alt="Goal completion chart by week"
+            loading="lazy"
+          />
+          <div class="shot-label">Goals — completion rate over time</div>
+        </div>
+        <div class="shot-card">
+          <img
+            src="../assets/Tily/Screenshot 2026-03-14 at 11.45.29.png"
+            alt="Energy tracking chart"
+            loading="lazy"
+          />
+          <div class="shot-label">Energy — get to know better when you are feeling low</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- VIDEO DEMO -->
+  <section
+    <div class="demo-wrap">
+      <div class="demo-header">
+        <h2 class="section-title">Small demo displaying the advanced stats</h2>
+      </div>
+      <div class="video-shell">
+        <video
+          src="../assets/Tily/Screen Recording 2026-03-14 at 11.43.51.mov"
+          controls
+          playsinline
+          preload="metadata"
+          aria-label="Tily app demo"
+        ></video>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section">
+    <div class="cta-inner">
+      <div class="cta-mark">
+        <img src="../assets/Tily/logo.png" alt="Tily logo" />
+      </div>
+      <h2>Ready to focus?</h2>
+      <p>Free to download. No account. No subscription.</p>
+      <a class="btn-download" href="../assets/Tily/Tily.dmg" download="Tily.dmg">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+          <polyline points="7 10 12 15 17 10"/>
+          <line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        Download Tily.dmg
+      </a>
+      <p class="hero-compat">macOS 13+ &nbsp;·&nbsp; Apple Silicon &amp; Intel</p>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>&copy; 2026 Tily &nbsp;·&nbsp; Made for Mac</p>
+  </footer>
+
+  <!-- GoatCounter analytics -->
+  <script data-goatcounter="https://sniks.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+
+  <script>
+    // Track every download button click as a named event in GoatCounter
+    document.querySelectorAll('a[download]').forEach(function(link) {
+      link.addEventListener('click', function() {
+        if (window.goatcounter && window.goatcounter.count) {
+          window.goatcounter.count({
+            path: 'download/tily-dmg',
+            title: 'DMG Download',
+            event: true
+          });
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>
