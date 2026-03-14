@@ -480,7 +480,7 @@
   <section>
     <div class="shots-wrap">
       <div class="shots-header">
-        <h2 class="section-title">Some of the ways you can measure your stats!</h2>
+        <h2 class="section-title">Some of the ways you can measure your stats.</h2>
       </div>
 
       <div class="shots-grid">
@@ -491,14 +491,6 @@
             loading="lazy"
           />
           <div class="shot-label">Weekly hours — day-by-day breakdown</div>
-        </div>
-        <div class="shot-card">
-          <img
-            src="../assets/Tily/Screenshot 2026-03-14 at 11.45.19.png"
-            alt="Tily settings and color preferences"
-            loading="lazy"
-          />
-          <div class="shot-label">Settings — color themes &amp; preferences</div>
         </div>
         <div class="shot-card">
           <img
@@ -516,6 +508,52 @@
           />
           <div class="shot-label">Energy — get to know better when you are feeling low</div>
         </div>
+        <div class="shot-card">
+          <img
+            src="../assets/Tily/Screenshot 2026-03-14 at 11.45.23.png"
+            alt="Advanced analytics dashboard"
+            loading="lazy"
+          />
+          <div class="shot-label">Dashboard — full overview of all your sessions</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- PRIVACY -->
+  <section>
+    <div class="shots-wrap">
+      <div style="display:flex; align-items:center; gap:4rem; flex-wrap:wrap;">
+        <div style="flex:1; min-width:260px;">
+          <span class="section-tag">Data Privacy</span>
+          <h2 class="section-title">Your data is<br />yours alone.</h2>
+          <p style="margin-top:1rem; font-size:1.05rem; color:var(--muted); line-height:1.75; letter-spacing:-0.01em;">
+            Tily does not send any of your data anywhere. Everything is stored on device and can be deleted at all times — no strings attached.
+          </p>
+          <div style="display:flex; flex-direction:column; gap:0.75rem; margin-top:1.75rem;">
+            <div style="display:flex; align-items:center; gap:0.6rem; font-size:0.9rem; color:var(--ink); font-weight:500;">
+              <span style="color:var(--orange); font-size:1.1rem;">✓</span> No internet required
+            </div>
+            <div style="display:flex; align-items:center; gap:0.6rem; font-size:0.9rem; color:var(--ink); font-weight:500;">
+              <span style="color:var(--orange); font-size:1.1rem;">✓</span> No account or login
+            </div>
+            <div style="display:flex; align-items:center; gap:0.6rem; font-size:0.9rem; color:var(--ink); font-weight:500;">
+              <span style="color:var(--orange); font-size:1.1rem;">✓</span> Delete everything instantly
+            </div>
+          </div>
+        </div>
+        <div style="flex:1; min-width:260px;">
+          <div class="shot-card">
+            <img
+              src="../assets/Tily/reset-data.png"
+              alt="Settings showing Reset All Data option"
+              loading="lazy"
+            />
+            <div class="shot-label">Settings — reset all data with one tap, any time</div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -523,18 +561,40 @@
   <div class="divider"></div>
 
   <!-- VIDEO DEMO -->
-  <section
+  <section>
     <div class="demo-wrap">
       <div class="demo-header">
-        <h2 class="section-title">Small demo displaying the advanced stats</h2>
+        <span class="section-tag">See it in action</span>
+        <h2 class="section-title">Advanced stats, at a glance.</h2>
       </div>
       <div class="video-shell">
         <video
+          data-autoplay
           src="../assets/Tily/Screen Recording 2026-03-14 at 11.43.51.mov"
           controls
+          muted
+          loop
           playsinline
           preload="metadata"
-          aria-label="Tily app demo"
+          aria-label="Tily advanced stats demo"
+        ></video>
+      </div>
+
+      <div class="demo-header" style="margin-top:3.5rem;">
+        <span class="section-tag">End of session</span>
+        <h2 class="section-title">Reflect after every session.</h2>
+        <p class="section-body">At the end of each session Tily asks you a few quick questions to build a richer picture of your productivity over time.</p>
+      </div>
+      <div class="video-shell">
+        <video
+          data-autoplay
+          src="../assets/Tily/advanced-question.mov"
+          controls
+          muted
+          loop
+          playsinline
+          preload="metadata"
+          aria-label="Tily end-of-session questions"
         ></video>
       </div>
     </div>
@@ -560,6 +620,8 @@
     </div>
   </section>
 
+  <div class="divider"></div>
+
   <!-- FOOTER -->
   <footer>
     <p>&copy; 2026 Tily &nbsp;·&nbsp; Made for Mac</p>
@@ -567,6 +629,24 @@
 
   <!-- GoatCounter analytics -->
   <script data-goatcounter="https://sniks.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+
+  <script>
+    // Autoplay videos when scrolled into view, pause when scrolled away
+    var videoObserver = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        var v = entry.target;
+        if (entry.isIntersecting) {
+          v.play().catch(function() {});
+        } else {
+          v.pause();
+        }
+      });
+    }, { threshold: 0.5 });
+
+    document.querySelectorAll('video[data-autoplay]').forEach(function(v) {
+      videoObserver.observe(v);
+    });
+  </script>
 
   <script>
     // Track every download button click as a named event in GoatCounter
